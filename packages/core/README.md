@@ -67,7 +67,7 @@ export const meta = { title: 'Hello' };
 Preferred path: define a shared Slide AST once, then render it both ways:
 
 ```tsx
-import { defineDeck, rect, renderReact, slide, text } from '@open-slide/core';
+import { defineDeck, group, list, rect, renderReact, slide, table, text } from '@open-slide/core';
 
 export const ast = defineDeck({
   title: 'Hello',
@@ -75,8 +75,29 @@ export const ast = defineDeck({
     slide({
       background: '#0F172A',
       children: [
-        rect({ x: 96, y: 96, w: 480, h: 180, fill: '#22C55E', radius: 24 }),
-        text({ x: 128, y: 124, w: 900, h: 100, text: 'Hello editable PPTX', fontSize: 44, bold: true, color: '#FFFFFF' }),
+        group({
+          x: 96,
+          y: 96,
+          w: 900,
+          h: 260,
+          children: [
+            rect({ x: 0, y: 0, w: 900, h: 260, fill: '#22C55E', radius: 24 }),
+            text({ x: 32, y: 32, w: 820, h: 70, text: 'Hello editable PPTX', fontSize: 44, bold: true, color: '#FFFFFF' }),
+            list({ x: 40, y: 122, w: 760, h: 90, items: ['React pages', 'Editable PowerPoint shapes'], fontSize: 28, color: '#FFFFFF' }),
+          ],
+        }),
+        table({
+          x: 96,
+          y: 420,
+          w: 760,
+          h: 180,
+          rows: [
+            ['Renderer', 'Output'],
+            ['React', 'Page[]'],
+            ['PPTX', 'Shapes'],
+          ],
+          headerFill: '#E0F2FE',
+        }),
       ],
     }),
   ],
