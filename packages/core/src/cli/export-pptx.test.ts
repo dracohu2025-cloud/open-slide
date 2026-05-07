@@ -29,4 +29,36 @@ export const pptx = {
     expect(slideXml).toContain('<p:sp>');
     expect(slideXml).not.toContain('<p:pic>');
   });
+
+  it('accepts a shared Slide AST export when explicit pptx is absent', async () => {
+    const cwd = await mkdtemp(path.join(os.tmpdir(), 'open-slide-ast-pptx-'));
+    await mkdir(path.join(cwd, 'slides', 'ast-demo'), { recursive: true });
+    await writeFile(
+      path.join(cwd, 'slides', 'ast-demo', 'index.tsx'),
+      `export default [];
+export const ast = {
+  kind: 'open-slide.deck',
+  title: 'AST CLI PPTX',
+  slides: [
+    {
+      kind: 'open-slide.slide',
+      children: [
+        { kind: 'open-slide.text', x: 64, y: 64, w: 900, h: 90, text: 'Demo from AST', fontSize: 40 },
+      ],
+    },
+  ],
+};
+`,
+    );
+
+    const output = path.join(cwd, 'ast-demo.pptx');
+    await exportPptx({ cwd, slideId: 'ast-demo', output });
+
+    const pptx = await readFile(output);
+    const files = unzipSync(pptx);
+    const slideXml = strFromU8(files['ppt/slides/slide1.xml']);
+    expect(slideXml).toContain('Demo from AST');
+    expect(slideXml).toContain('<p:sp>');
+    expect(slideXml).not.toContain('<p:pic>');
+  });
 });

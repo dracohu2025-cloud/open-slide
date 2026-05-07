@@ -2,6 +2,7 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createServer, mergeConfig } from 'vite';
 import { createPptxBuffer, type PptxDeck } from '../pptx/exporter.ts';
+import { isSlideAstDeck, renderPptx } from '../slide-ast/index.tsx';
 import { createViteConfig } from '../vite/config.ts';
 
 export type ExportPptxOptions = {
@@ -27,12 +28,7 @@ export async function exportPptx(opts: ExportPptxOptions): Promise<string> {
       loadSlide(id: string): Promise<Record<string, unknown>>;
     };
     const slideModule = await slidesModule.loadSlide(opts.slideId);
-    const pptxDeck = slideModule.pptx;
-    if (!isPptxDeck(pptxDeck)) {
-      throw new Error(
-        `Slide ${opts.slideId} does not export a valid \`pptx\` deck. Editable PPTX export is schema-based; arbitrary React/CSS cannot be converted safely.`,
-      );
-    }
+    const pptxDeck = resolvePptxDeck(slideModule, opts.slideId);
 
     const buffer = createPptxBuffer(pptxDeck);
     await mkdir(path.dirname(output), { recursive: true });
@@ -41,6 +37,15 @@ export async function exportPptx(opts: ExportPptxOptions): Promise<string> {
   } finally {
     await server.close();
   }
+}
+
+function resolvePptxDeck(slideModule: Record<string, unknown>, slideId: string): PptxDeck {
+  if (isPptxDeck(slideModule.pptx)) return slideModule.pptx;
+  if (isSlideAstDeck(slideModule.ast)) return renderPptx(slideModule.ast);
+
+  throw new Error(
+    `Slide ${slideId} does not export a valid \`pptx\` deck or shared \`ast\` deck. Editable PPTX export is schema-based; arbitrary React/CSS cannot be converted safely.`,
+  );
 }
 
 function isPptxDeck(value: unknown): value is PptxDeck {
