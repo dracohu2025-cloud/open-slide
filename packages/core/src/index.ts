@@ -20,3 +20,26 @@ export type {
   PptxTextElement,
 } from './pptx/exporter.ts';
 export { createPptxBuffer, pxToEmu } from './pptx/exporter.ts';
+export type {
+  DefineDeckInput,
+  LineInput,
+  RectInput,
+  SlideAstDeck,
+  SlideAstElement,
+  SlideAstLine,
+  SlideAstRect,
+  SlideAstSlide,
+  SlideAstText,
+  SlideInput,
+  TextInput,
+} from './slide-ast/index.tsx';
+export {
+  defineDeck,
+  isSlideAstDeck,
+  line,
+  rect,
+  renderPptx,
+  renderReact,
+  slide,
+  text,
+} from './slide-ast/index.tsx';

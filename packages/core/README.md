@@ -62,26 +62,27 @@ export const meta = { title: 'Hello' };
 
 ## Editable PPTX export
 
-`open-slide export:pptx <slide-id>` creates a real `.pptx` with editable PowerPoint shapes and text. It does **not** screenshot the React DOM. Because arbitrary React/CSS cannot be safely translated into OOXML, export is schema-based: add a sibling `pptx` export to the slide module.
+`open-slide export:pptx <slide-id>` creates a real `.pptx` with editable PowerPoint shapes and text. It does **not** screenshot the React DOM.
+
+Preferred path: define a shared Slide AST once, then render it both ways:
 
 ```tsx
-import type { Page, PptxDeck } from '@open-slide/core';
+import { defineDeck, rect, renderReact, slide, text } from '@open-slide/core';
 
-const Cover: Page = () => <div>Hello</div>;
-export default [Cover];
-
-export const pptx: PptxDeck = {
+export const ast = defineDeck({
   title: 'Hello',
   slides: [
-    {
+    slide({
       background: '#0F172A',
-      elements: [
-        { type: 'rect', x: 96, y: 96, w: 480, h: 180, fill: '#22C55E', radius: 24 },
-        { type: 'text', x: 128, y: 124, w: 900, h: 100, text: 'Hello editable PPTX', fontSize: 44, bold: true, color: '#FFFFFF' },
+      children: [
+        rect({ x: 96, y: 96, w: 480, h: 180, fill: '#22C55E', radius: 24 }),
+        text({ x: 128, y: 124, w: 900, h: 100, text: 'Hello editable PPTX', fontSize: 44, bold: true, color: '#FFFFFF' }),
       ],
-    },
+    }),
   ],
-};
+});
+
+export default renderReact(ast);
 ```
 
 Then run:
@@ -89,6 +90,8 @@ Then run:
 ```bash
 open-slide export:pptx hello -o hello.pptx
 ```
+
+The CLI reads `ast` automatically and renders it to editable PPTX. For compatibility, it still accepts the lower-level `pptx: PptxDeck` export.
 
 Coordinates use the same fixed 1920×1080 canvas as Open Slide and map to PowerPoint widescreen EMUs.
 
