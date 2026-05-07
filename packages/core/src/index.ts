@@ -22,24 +22,33 @@ export type {
 export { createPptxBuffer, pxToEmu } from './pptx/exporter.ts';
 export type {
   DefineDeckInput,
+  GroupInput,
   LineInput,
+  ListInput,
   RectInput,
   SlideAstDeck,
   SlideAstElement,
+  SlideAstGroup,
   SlideAstLine,
+  SlideAstList,
   SlideAstRect,
   SlideAstSlide,
+  SlideAstTable,
   SlideAstText,
   SlideInput,
+  TableInput,
   TextInput,
 } from './slide-ast/index.tsx';
 export {
   defineDeck,
+  group,
   isSlideAstDeck,
   line,
+  list,
   rect,
   renderPptx,
   renderReact,
   slide,
+  table,
   text,
 } from './slide-ast/index.tsx';
